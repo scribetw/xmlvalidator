@@ -3,12 +3,14 @@
 A web application for XML learners to validate DTD, XML Schema.
 Plus it offers XPath evaluation function on your browser.
 
+Location: [http://xmlvalidator.new-studio.org](http://xmlvalidator.new-studio.org)
+
 ## Installation
 
 1. Download JDK7 (8 is not yet supported by Google).
 2. Download Google App Engine SDK for Java. Remember to set `APPENGINE_HOME` environment variable.
 3. Git clone this repository.
-4. Edit `src/main/webapp/WEB-INF/appengine-web.xml`, Fill your own application id.
+4. Edit `src/main/webapp/WEB-INF/appengine-web.xml`, fill your own application id.
 5. Use Gradle tasks to help you.
 
 ## Usage
