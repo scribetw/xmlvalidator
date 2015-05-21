@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-tw">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Language" content="zh-tw" />
+<link rel="stylesheet" type="text/css" href="/static/SyntaxHighlighter.css" />
+<title>XML Validator Online</title>
+<style type="text/css">
+#header { font-size: 2em; font-family: Arial; padding: 10px; }
+#beta { font-size: 0.4em; color: grey; }
+#container { margin: 0 auto; width: 1000px; border:1px solid #2B91AF; padding: 0 20px 20px 20px; }
+#xsd, #dtd, #result_content, #xmlSource { display: none; }
+p.submit { text-align: center; }
+#btnchk { width: 200px; font-size: 1.2em; }
+img.s { vertical-align: middle; margin-right: 5px; }
+#err div { left: 50px; }
+#err br { clear: left; }
+.fl { float: left; }
+#footer { text-align: center; font-size: 0.8em; }
+#ajax_loading { position: absolute; width: 54px; left: 50%; margin-left: -27px; top: 200px; z-index: 100; display: none; }
+</style>
+</head>
+<body>
+
+<div id="container">
+<div id="header">XML Validator Online <span id="beta">BETA</span></div>
+<form id="frmMain" enctype="multipart/form-data" method="post" action="/validateXML">
+<div id="main_content">
+<h1>XML Validation</h1>
+<label><input type="radio" name="filetype" value="xpath" checked="checked" />XPath</label>
+<label><input type="radio" name="filetype" value="xsd" />Schema</label>
+<label><input type="radio" name="filetype" value="dtd" />DTD</label>
+<br />
+Charset: <select name="charset">
+	<option value="utf-8" selected="selected">UTF-8 (Unicode, worldwide)</option>
+	<option value="utf-16">UTF-16 (Unicode, worldwide)</option>
+	<option value="iso-8859-1">ISO-8859-1 (Western Europe)</option>
+	<option value="iso-8859-2">ISO-8859-2 (Central Europe)</option>
+	<option value="iso-8859-3">ISO-8859-3 (Southern Europe)</option>
+	<option value="iso-8859-4">ISO-8859-4 (North European)</option>
+	<option value="iso-8859-5">ISO-8859-5 (Cyrillic)</option>
+	<option value="iso-8859-6-i">ISO-8859-6-i (Arabic)</option>
+	<option value="iso-8859-7">ISO-8859-7 (Greek)</option>
+	<option value="iso-8859-8">ISO-8859-8 (Hebrew, visual)</option>
+	<option value="iso-8859-8-i">ISO-8859-8-i (Hebrew, logical)</option>
+	<option value="iso-8859-9">ISO-8859-9 (Turkish)</option>
+	<option value="iso-8859-10">ISO-8859-10 (Latin 6)</option>
+	<option value="iso-8859-11">ISO-8859-11 (Latin/Thai)</option>
+	<option value="iso-8859-13">ISO-8859-13 (Latin 7, Baltic Rim)</option>
+	<option value="iso-8859-14">ISO-8859-14 (Latin 8, Celtic)</option>
+	<option value="iso-8859-15">ISO-8859-15 (Latin 9)</option>
+	<option value="iso-8859-16">ISO-8859-16 (Latin 10)</option>
+	<option value="us-ascii">US-ASCII (basic English)</option>
+	<option value="euc-jp">EUC-JP (Japanese, Unix)</option>
+	<option value="shift_jis">Shift_JIS (Japanese, Win/Mac)</option>
+	<option value="iso-2022-jp">ISO-2022-JP (Japanese, email)</option>
+	<option value="euc-kr">EUC-KR (Korean)</option>
+	<option value="ksc_5601">KSC_5601 (Korean)</option>
+	<option value="gb2312">GB2312 (Chinese, simplified)</option>
+	<option value="gb18030">GB18030 (Chinese, simplified)</option>
+	<option value="big5">Big5 (Chinese, traditional)</option>
+	<option value="big5-HKSCS">Big5-HKSCS (Chinese, Hong Kong)</option>
+	<option value="tis-620">TIS-620 (Thai)</option>
+	<option value="koi8-r">KOI8-R (Russian)</option>
+	<option value="koi8-u">KOI8-U (Ukrainian)</option>
+	<option value="iso-ir-111">ISO-IR-111 (Cyrillic KOI-8)</option>
+	<option value="macintosh">Macintosh (MacRoman)</option>
+	<option value="windows-1250">Windows-1250 (Central Europe)</option>
+	<option value="windows-1251">Windows-1251 (Cyrillic)</option>
+	<option value="windows-1252">Windows-1252 (Western Europe)</option>
+	<option value="windows-1253">Windows-1253 (Greek)</option>
+	<option value="windows-1254">Windows-1254 (Turkish)</option>
+	<option value="windows-1255">Windows-1255 (Hebrew)</option>
+	<option value="windows-1256">Windows-1256 (Arabic)</option>
+	<option value="windows-1257">Windows-1257 (Baltic Rim)</option>
+</select><br />
+Choose XML file to validate: <input type="file" name="fileXML" size="40" />
+<div id="xsd">XML Schema: <input type="file" name="fileXSD" /></div>
+<div id="dtd">Due to the technical issue, embedded DTD is allowed ONLY.<!-- input type="file" name="fileDTD" / --></div>
+
+<p class="submit"><input type="submit" id="btnchk" value="Check" /></p>
+</div>
+</form>
+
+<div id="result_content">
+<hr />
+
+<form id="XPath_form" action="/dummy">
+<div id="XPath">
+<h1>XPath Explorer</h1>
+<input type="text" id="XPath_expr" size="70" /> <button type="button" id="XPath_eval">Run</button>
+<ol id="XPath_result"><li /></ol>
+</div>
+</form>
+
+<h1>Validation Result</h1>
+<div id="err"></div>
+
+<h1>Source Code</h1>
+<textarea id="xmlSource" name="xmlSource" class="xml" cols="120" rows="20"></textarea>
+</div>
+
+<div id="footer">2009 | <a href="http://scribe.chkkk.idv.tw">Scribe's N.E.W. Studio</a> | Powered by <a href="http://appengine.google.com">Google App Engine</a> | <a href="thanks.htm">Thanks</a></div>
+</div>
+
+<div id="ajax_loading"><img src="/static/ajax-loading.gif" alt="Now Loading..." /></div>
+
+<a href="https://github.com/scribetw/xmlvalidator">
+	<img style="position: absolute; top: 0; right: 0; border: 0;"
+		 src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67"
+		 alt="Fork me on GitHub"
+		 data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png">
+</a>
+
+<script type="text/javascript" src="/static/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="/static/jquery.form.min.js"></script>
+<script type="text/javascript" src="/static/xpath4jquery.js"></script>
+<script type="text/javascript" src="/static/shCore-xml.js"></script>
+<script type="text/javascript" src="/static/konami.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+var tempXML = null; // XMLDocument
+jQuery(function($){
+	
+	konami(function(){ location.href = '/devconsole.htm'; }); // ???
+
+	// Make the form to AJAX style
+	$('#frmMain').ajaxForm({ 
+		dataType: 'xml',
+		beforeSubmit: beforeSubmit,
+		success: processResult
+	});
+
+	$('input:radio').click(function(){
+		$('#xsd, #dtd').hide().filter('#' + this.value).show();
+	});
+
+	// Process XPath expression evaluation
+	$('#XPath_eval').click(function(){
+		$('#XPath_result').empty();
+		try{
+			var set = $.browser.msie
+				? $(tempXML.selectNodes($('#XPath_expr').val())) // IE native XPath quirks
+				: $(tempXML).xfind($('#XPath_expr').val()); // Other Browser
+			set.each(function(){
+				$('<li />').text(toXML(this)).appendTo('#XPath_result');
+			});
+		}catch(e){ }
+		if($('#XPath_result').html() == ''){ // No matches
+			$('<div><img src="/static/error.png" class="s" />No matches.</div>').appendTo('#XPath_result');
+		}
+	});
+
+	// Handle the form submit (By press Enter)
+	$('#XPath_form').submit(function(){
+		$('#XPath_eval').click();
+		return false;
+	});
+
+	function beforeSubmit(){
+		if($('input:file:eq(0)').val() === ''){
+			alert('Choose XML first!');
+			return false;
+		}
+		$('#btnchk').attr('disabled', 'disabled');
+		$("#ajax_loading").show();
+		$('#result_content').hide();
+	}
+
+	function processResult(xml){
+		var i,j,k,l;
+		$('#err').empty();
+		$('#xmlSource').text($('result > xml', xml).text());
+		if($('result > status', xml).text() !== '+OK'){
+			$('#XPath').hide();
+			var errlen = $('result > message > errors > error', xml).each(function(){
+				i = $('level', this).text();
+				j = $('line', this).text();
+				k = $('column', this).text();
+				l = $('message', this).text();
+				$('<img src="/static/'+i+'.png" class="fl s" /><div /><br />')
+					.filter('div').text('Line '+j+' Column '+k+' : '+l).end().appendTo('#err');
+			}).length;
+			$('#err').prepend('<h2>'+errlen+' Error(s)</h2>');
+		}else{
+			$('#err').html('<img src="/static/success.png" class="s" />Validation successful!');
+			tempXML = toXMLDocument($('#xmlSource').text()); // String to XMLDocument
+			$('#XPath_expr').val('').siblings('#XPath_result').empty().parent().show(); // Reset the status and show XPath panel
+		}
+		// XML Syntax Highlight
+		$('div.dp-highlighter').remove();
+		dp.SyntaxHighlighter.HighlightAll('xmlSource');
+		$("#ajax_loading").fadeOut('fast');
+		$('#result_content').slideDown('slow');
+		$('#btnchk').attr('disabled', '');
+	}
+
+	// Adopt form jQuery.Form
+	// Transform XML String to XML Document
+	function toXMLDocument(s, doc) {
+		if (window.ActiveXObject) {
+			doc = new ActiveXObject('Microsoft.XMLDOM');
+			doc.async = 'false';
+			doc.loadXML(s);
+		}else
+			doc = (new DOMParser()).parseFromString(s, 'text/xml');
+		return (doc && doc.documentElement && doc.documentElement.tagName != 'parsererror') ? doc : null;
+	}
+
+	// Transform XML Node to XML String
+	function toXML(node){
+		return node.xml || (new XMLSerializer()).serializeToString(node);
+	}
+});
+// ]]>
+</script>
+</body>
+</html>
